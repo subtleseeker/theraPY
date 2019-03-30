@@ -12,7 +12,7 @@ font = cv2.FONT_HERSHEY_PLAIN
 
 def get_irises_location(frame_gray):
 
-    eye_cascade=cv2.CascadeClassifier(r'C:\Users\Pulkit Pahuja\Desktop\ML\hackDTU\haarcascades\haarcascade_eye_tree_eyeglasses.xml')
+    eye_cascade=cv2.CascadeClassifier(r'haarcascades/haarcascade_eye_tree_eyeglasses.xml')
     eyes = eye_cascade.detectMultiScale(frame_gray, 1.3, 5)  # if not empty - eyes detected
 
     irises=[]
