@@ -1,9 +1,18 @@
-import dlib
-import numpy as np
 import cv2
+import numpy as np
+import dlib
+import csv
 from math import hypot
+import pickle
+import pandas as pd
+from pygame import mixer
 
+list123=[]
 irises=[]
+my_irises=[]
+d=[]
+mean=[]
+counter=0
 
 cap= cv2.VideoCapture(0)
 detector=dlib.get_frontal_face_detector()
@@ -11,9 +20,26 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 font = cv2.FONT_HERSHEY_PLAIN
 
-# def face_sentiment():
-#     path = "./face_classification/src/video_emotion_color_demo.py"
-    
+
+song_dict={
+    "0":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\1.mp3",
+    "1":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\2.mp3",
+    "2":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\3.mp3",
+    "3":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\4.mp3",
+    "4":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\5.mp3",
+    "5":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\6.mp3",
+    "6":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\7.mp3",
+    "7":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\8.mp3",
+    "8":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\9.mp3",
+    "9":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\10.mp3"
+    }
+
+
+
+def face_sentiment():
+
+    path = "./face_classification/src/video_emotion_color_demo.py"
+
 
 
 def get_irises_location(frame_gray):
@@ -26,7 +52,7 @@ def get_irises_location(frame_gray):
         iris_w = int(ex + float(ew / 2))
         iris_h = int(ey + float(eh / 2))
         irises.append([np.float32(iris_w), np.float32(iris_h)])
-        #my_irises.append([np.float32(iris_w), np.float32(iris_h)])
+        my_irises.append([np.float32(iris_w), np.float32(iris_h)])
 
     return irises
 
@@ -130,7 +156,17 @@ while True:
 
         contours = sorted(contours, key=lambda x: cv2.contourArea(x), reverse=True)
 
+        for i in range(len(my_irises)-2):
+            d.append(distance(np.asarray(my_irises[i+2]),np.asarray(my_irises[i])))
+        a1=np.mean(d)
+        mean.append(a1)
+
+
         for cnt in contours:
+            if cv2.contourArea(cnt)<400 and cv2.contourArea(cnt)>300:
+                a=cv2.contourArea(cnt)
+                list123.append(a)
+
             cv2.drawContours(frame, [cnt], 0, (0, 0, 255), 3)
 
         cv2.imshow("Threshold left", threshold_eye_left)
