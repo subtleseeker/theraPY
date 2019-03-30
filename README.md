@@ -13,4 +13,5 @@ From the research: “The eye is listening: Music-induced arousal and individual
 ## Research base:   
 https://neurosciencenews.com/music-pupil-size-emotion-3059/   
 http://serious-science.org/music-brightens-the-eyes-pupil-size-is-modulated-by-musical-emotions-5541    
+https://www.omicsonline.org/open-access/benefits-of-using-music-therapy-in-mental-disorders-2090-2719-1000116.php?aid=76546
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4639616/    
