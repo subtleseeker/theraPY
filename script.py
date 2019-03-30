@@ -11,6 +11,11 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 font = cv2.FONT_HERSHEY_PLAIN
 
+# def face_sentiment():
+#     path = "./face_classification/src/video_emotion_color_demo.py"
+    
+
+
 def get_irises_location(frame_gray):
 
     eye_cascade=cv2.CascadeClassifier(r'haarcascades/haarcascade_eye_tree_eyeglasses.xml')
@@ -110,8 +115,10 @@ while True:
         gray_eye_right = right_eye[min_y1: max_y1, min_x1: max_x1]
 
         _, threshold_eye_left = cv2.threshold(gray_eye_left, 70, 255, cv2.THRESH_BINARY)
-        threshold_eye_left = cv2.resize(threshold_eye_left, None, fx=5, fy=5)
-
+        try:
+            threshold_eye_left = cv2.resize(threshold_eye_left, None, fx=5, fy=5)
+        except:
+            pass
         _, threshold_eye_right = cv2.threshold(gray_eye_right, 70, 255, cv2.THRESH_BINARY)
         threshold_eye_right = cv2.resize(threshold_eye_right, None, fx=5, fy=5)
 
