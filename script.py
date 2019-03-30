@@ -7,6 +7,20 @@ import pickle
 import pandas as pd
 from pygame import mixer
 
+from statistics import mode
+
+import cv2
+from keras.models import load_model
+import numpy as np
+
+from utils.datasets import get_labels
+from utils.inference import detect_faces
+from utils.inference import draw_text
+from utils.inference import draw_bounding_box
+#from utils.inference import apply_offsets
+from utils.inference import load_detection_model
+from utils.preprocessor import preprocess_input
+
 list123=[]
 irises=[]
 my_irises=[]
@@ -18,23 +32,24 @@ cap= cv2.VideoCapture(0)
 detector=dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
+detection_model_path = r'haarcascades\haarcascade_frontalface_default.xml'
+emotion_model_path = r'trained_models\emotion_models\fer2013_mini_XCEPTION.102-0.66.hdf5'
+emotion_labels = get_labels('fer2013')
+
+frame_window=10
+emotion_offsets = (20, 40)
+
+face_detection = load_detection_model(detection_model_path)
+
+emotion_classifier = load_model(emotion_model_path, compile=False)
+
+emotion_target_size = emotion_classifier.input_shape[1:3]
+
+
+emotion_window = []
+
+
 font = cv2.FONT_HERSHEY_PLAIN
-
-
-song_dict={
-    "0":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\1.mp3",
-    "1":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\2.mp3",
-    "2":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\3.mp3",
-    "3":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\4.mp3",
-    "4":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\5.mp3",
-    "5":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\6.mp3",
-    "6":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\7.mp3",
-    "7":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\8.mp3",
-    "8":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\9.mp3",
-    "9":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\10.mp3"
-    }
-
-
 
 def face_sentiment():
 
@@ -78,21 +93,75 @@ def distance(v1, v2):
     return np.sqrt(np.sum((v1 - v2)**2))
 
 
-
 while True:
     d=[]
     _, frame = cap.read()
+    bgr_image = cap.read()[1]
+    gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+    faces = detect_faces(face_detection, gray_image)
+
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray_copy=gray
 
     irises=get_irises_location(gray)
 
     faces = detector(gray)
+
     for face in faces:
-        #x, y = face.left(), face.top()
-        #x1, y1 = face.right(), face.bottom()
+        x, y = face.left(), face.top()
+        x1, y1 = face.right(), face.bottom()
         #cv2.rectangle(frame, (x, y), (x1, y1), (0, 255, 0), 2)
 
-        landmarks = predictor(gray, face)
+        #x1, x2, y1, y2 = apply_offsets(face, emotion_offsets)
+        gray_face = gray_image[y:y1, x:x1]
+        try:
+            gray= cv2.resize(gray_face, (emotion_target_size))
+        except:
+            continue
+
+        gray_face = preprocess_input(gray, True)
+        gray_face = np.expand_dims(gray_face, 0)
+        gray_face = np.expand_dims(gray_face, -1)
+        emotion_prediction = emotion_classifier.predict(gray_face)
+        emotion_probability = np.max(emotion_prediction)
+        emotion_label_arg = np.argmax(emotion_prediction)
+        emotion_text = emotion_labels[emotion_label_arg]
+        emotion_window.append(emotion_text)
+
+        if len(emotion_window) > frame_window:
+            emotion_window.pop(0)
+        try:
+            emotion_mode = mode(emotion_window)
+        except:
+            continue
+
+        print (emotion_text)
+
+        if emotion_text == 'angry':
+            color = emotion_probability * np.asarray((255, 0, 0))
+        elif emotion_text == 'sad':
+            color = emotion_probability * np.asarray((0, 0, 255))
+        elif emotion_text == 'happy':
+            color = emotion_probability * np.asarray((255, 255, 0))
+        elif emotion_text == 'surprise':
+            color = emotion_probability * np.asarray((0, 255, 255))
+        else:
+            color = emotion_probability * np.asarray((0, 255, 0))
+
+        color = color.astype(int)
+        color = color.tolist()
+
+
+
+        cv2.rectangle(frame, (x, y), (x1, y1), color, 2)
+        #cv2.rectangle(rgb_image, (face.left(), face.top()), (face.left() + 20, face.top() + 40),color, 2)
+        #draw_text(face, rgb_image, emotion_mode,
+                   #color, 0, -45, 1, 1)
+
+
+
+        landmarks = predictor(gray_copy, face)
 
         left_eye_ratio = get_blinking_ratio([36, 37, 38, 39, 40, 41], landmarks)
         right_eye_ratio = get_blinking_ratio([42, 43, 44, 45, 46, 47], landmarks)
@@ -119,13 +188,13 @@ while True:
         mask = np.zeros((height, width), np.uint8)
         cv2.polylines(mask, [left_eye_region], True, 255, 2)
         cv2.fillPoly(mask, [left_eye_region], 255)
-        left_eye = cv2.bitwise_and(gray, gray, mask=mask)
+        left_eye = cv2.bitwise_and(gray_copy, gray_copy, mask=mask)
 
         height1, width1, _ = frame.shape
         mask1 = np.zeros((height1, width1), np.uint8)
         cv2.polylines(mask1, [right_eye_region], True, 255, 2)
         cv2.fillPoly(mask1, [right_eye_region], 255)
-        right_eye = cv2.bitwise_and(gray, gray, mask=mask1)
+        right_eye = cv2.bitwise_and(gray_copy, gray_copy, mask=mask1)
 
 
         min_x = np.min(left_eye_region[:, 0])
