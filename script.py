@@ -74,6 +74,10 @@ def get_blinking_ratio(eye_points, facial_landmarks):
 def midpoint(p1 ,p2):
     return int((p1.x + p2.x)/2), int((p1.y + p2.y)/2)
 
+def distance(v1, v2):
+    return np.sqrt(np.sum((v1 - v2)**2))
+
+
 
 while True:
     d=[]
