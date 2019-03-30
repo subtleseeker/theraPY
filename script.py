@@ -103,6 +103,9 @@ while True:
         min_y1 = np.min(right_eye_region[:, 1])
         max_y1 = np.max(right_eye_region[:, 1])
 
+        for w,h in irises:
+            cv2.circle(frame, (w, h), 7, (0, 255, 0), 2)
+
         gray_eye_left = left_eye[min_y: max_y, min_x: max_x]
         gray_eye_right = right_eye[min_y1: max_y1, min_x1: max_x1]
 
@@ -111,6 +114,17 @@ while True:
 
         _, threshold_eye_right = cv2.threshold(gray_eye_right, 70, 255, cv2.THRESH_BINARY)
         threshold_eye_right = cv2.resize(threshold_eye_right, None, fx=5, fy=5)
+
+        bl_left = cv2.GaussianBlur(threshold_eye_left,(7,7),0)
+        bl_right = cv2.GaussianBlur(threshold_eye_right,(7,7),0)
+
+        contours,hierachy=cv2.findContours(bl_left,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        contours1,hierarchy1 = cv2.findContours(bl_right, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        contours = sorted(contours, key=lambda x: cv2.contourArea(x), reverse=True)
+
+        for cnt in contours:
+            cv2.drawContours(frame, [cnt], 0, (0, 0, 255), 3)
 
         cv2.imshow("Threshold left", threshold_eye_left)
         cv2.imshow("Threshold right", threshold_eye_right)
