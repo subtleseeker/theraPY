@@ -28,16 +28,17 @@ counter=0
 emotion_list=[]
 
 song_dict={
-    "0":r"Music\1.mp3",
-    "1":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\2.mp3",
-    "2":r"  Music\3.mp3",
-    "3":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\4.mp3",
-    "4":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\5.mp3",
-    "5":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\6.mp3",
-    "6":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\7.mp3",
-    "7":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\8.mp3",
-    "8":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\9.mp3",
-    "9":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\10.mp3"
+    "0":r"Music/1.mp3",
+    "1":r"Music/2.mp3",
+    "2":r"Music/3.mp3",
+    "3":r"Music/4.mp3",
+    "4":r"Music/5.mp3",
+    "5":r"Music/6.mp3",
+    "6":r"Music/7.mp3",
+    "7":r"Music/8.mp3",
+    "8":r"Music/9.mp3",
+    "9":r"Music/10.mp3",
+    "10":r"Music/10.mp3"
     }
 
 
@@ -45,8 +46,10 @@ cap= cv2.VideoCapture(0)
 detector=dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-detection_model_path = r'haarcascades\haarcascade_frontalface_default.xml'
-emotion_model_path = r'trained_models\emotion_models\fer2013_mini_XCEPTION.102-0.66.hdf5'
+detection_model_path = r'haarcascades/haarcascade_frontalface_default.xml'
+emotion_model_path = r'trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+
+
 emotion_labels = get_labels('fer2013')
 
 frame_window=10
