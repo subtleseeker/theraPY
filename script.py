@@ -146,7 +146,8 @@ while True:
         except:
             continue
 
-        print (emotion_text)
+        # print (emotion_text)
+        print(".", end="")
 
         if emotion_text == 'angry':
             emotion_list.append(1)
@@ -290,13 +291,14 @@ while True:
 
         new_df = pd.DataFrame(columns=['Contour Area', 'Mean','Blinking','Emotion'], data=pred)
         result = loaded_model.predict(new_df)
+        print()
         print(result)
 
         mixer.init()
         mixer.music.load(song_dict["" + str(int(result))])
         mixer.music.play()
 
-        print(counter)
+        # print(counter)
 
         list123=[]
         mean=[]
