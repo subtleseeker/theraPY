@@ -28,15 +28,9 @@ counter=0
 emotion_list=[]
 
 song_dict={
-<<<<<<< HEAD
-    "1":r"Music\1.mp3",
-    "2":r"Music\2.mp3",
-    "3":r"Music\3.mp3"
-=======
     "1":r"Music/1.mp3",
     "2":r"Music/2.mp3",
     "3":r"Music/3.mp3"
->>>>>>> 2477dc5907d53a55f45db0ac60f64eda0edf3c1e
     }
 
 
