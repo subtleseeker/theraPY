@@ -28,9 +28,15 @@ counter=0
 emotion_list=[]
 
 song_dict={
+<<<<<<< HEAD
     "1":r"Music\1.mp3",
     "2":r"Music\2.mp3",
     "3":r"Music\3.mp3"
+=======
+    "1":r"Music/1.mp3",
+    "2":r"Music/2.mp3",
+    "3":r"Music/3.mp3"
+>>>>>>> 2477dc5907d53a55f45db0ac60f64eda0edf3c1e
     }
 
 
@@ -38,8 +44,10 @@ cap= cv2.VideoCapture(0)
 detector=dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-detection_model_path = r'haarcascades\haarcascade_frontalface_default.xml'
-emotion_model_path = r'trained_models\emotion_models\fer2013_mini_XCEPTION.102-0.66.hdf5'
+detection_model_path = r'haarcascades/haarcascade_frontalface_default.xml'
+emotion_model_path = r'trained_models/emotion_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+
+
 emotion_labels = get_labels('fer2013')
 
 frame_window=10
