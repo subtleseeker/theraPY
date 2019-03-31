@@ -9,9 +9,7 @@ from pygame import mixer
 
 from statistics import mode
 
-import cv2
 from keras.models import load_model
-import numpy as np
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
@@ -27,6 +25,21 @@ my_irises=[]
 d=[]
 mean=[]
 counter=0
+emotion_list=[]
+
+song_dict={
+    "0":r"Music\1.mp3",
+    "1":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\2.mp3",
+    "2":r"  Music\3.mp3",
+    "3":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\4.mp3",
+    "4":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\5.mp3",
+    "5":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\6.mp3",
+    "6":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\7.mp3",
+    "7":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\8.mp3",
+    "8":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\9.mp3",
+    "9":r"C:\Users\Pulkit Pahuja\Desktop\ML\Dr.BonnAI\Music\10.mp3"
+    }
+
 
 cap= cv2.VideoCapture(0)
 detector=dlib.get_frontal_face_detector()
@@ -48,6 +61,8 @@ emotion_target_size = emotion_classifier.input_shape[1:3]
 
 emotion_window = []
 
+blink_ratio=[]
+v=[1]
 
 font = cv2.FONT_HERSHEY_PLAIN
 
@@ -139,22 +154,27 @@ while True:
         print (emotion_text)
 
         if emotion_text == 'angry':
+            emotion_list.append(1)
             color = emotion_probability * np.asarray((255, 0, 0))
         elif emotion_text == 'sad':
+            emotion_list.append(2)
             color = emotion_probability * np.asarray((0, 0, 255))
         elif emotion_text == 'happy':
+            emotion_list.append(3)
             color = emotion_probability * np.asarray((255, 255, 0))
         elif emotion_text == 'surprise':
+            emotion_list.append(4)
             color = emotion_probability * np.asarray((0, 255, 255))
         else:
+            emotion_list.append(5)
             color = emotion_probability * np.asarray((0, 255, 0))
 
         color = color.astype(int)
         color = color.tolist()
 
+        ########################### EMOTION ENDS HERE ################################
 
-
-        cv2.rectangle(frame, (x, y), (x1, y1), color, 2)
+        #cv2.rectangle(frame, (x, y), (x1, y1), color, 2)
         #cv2.rectangle(rgb_image, (face.left(), face.top()), (face.left() + 20, face.top() + 40),color, 2)
         #draw_text(face, rgb_image, emotion_mode,
                    #color, 0, -45, 1, 1)
@@ -169,6 +189,10 @@ while True:
 
         if blinking_ratio > 5.7:
             cv2.putText(frame, "BLINKING", (50, 150), font, 7, (255, 0, 0))
+            blink_ratio.append(1.0)
+        else:
+            blink_ratio.append(0.0)
+
 
         left_eye_region = np.array([(landmarks.part(36).x, landmarks.part(36).y),
                                     (landmarks.part(37).x, landmarks.part(37).y),
@@ -235,21 +259,37 @@ while True:
         mean.append(a1)
 
 
+
+
+        #with open('dataset.csv','w') as newFile:
+            #newFileWriter = csv.writer(newFile)
+            #newFileWriter.writerow(['Contour Area','Mean','Blinking','Emotion','Music'])
+
+
+
         for cnt in contours:
+
             if cv2.contourArea(cnt)<400 and cv2.contourArea(cnt)>300:
                 a=cv2.contourArea(cnt)
                 list123.append(a)
 
             cv2.drawContours(frame, [cnt], 0, (0, 0, 255), 3)
 
-        cv2.imshow("Threshold left", threshold_eye_left)
-        cv2.imshow("Threshold right", threshold_eye_right)
-        cv2.imshow("Left eye", left_eye)
-        cv2.imshow("Right eye", right_eye)
+        #cv2.imshow("Threshold left", threshold_eye_left)
+        #cv2.imshow("Threshold right", threshold_eye_right)
+        #cv2.imshow("Left eye", left_eye)
+        #cv2.imshow("Right eye", right_eye)
 
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1)
     if key == 27:
+
+        for i in range(0,len(list123)):
+
+            with open('dataset.csv','a') as newFile:
+                newFileWriter = csv.writer(newFile)
+                newFileWriter.writerow([list123[i],mean[i],np.random.randint(0,2),emotion_list[i],3])
+
         break;
 
 cap.release()
