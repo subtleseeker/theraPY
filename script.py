@@ -147,7 +147,7 @@ while True:
             continue
 
         # print (emotion_text)
-        print(".", end="")
+        print(".")
 
         if emotion_text == 'angry':
             emotion_list.append(1)
@@ -282,13 +282,15 @@ while True:
     filename = 'finalized_model_new.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
 
-    if (counter%200==0):
+    if (counter%75==0):
 
 
         if (len(list123)<1 | len(mean)<1 | len(blink_ratio)<1 | len(emotion_list)<1):
             break
-        pred = [[list123[-1],mean[-1],blink_ratio[-1],emotion_list[-1]]]
-
+        try:
+            pred = [[list123[-1],mean[-1],blink_ratio[-1],emotion_list[-1]]]
+        except:
+            pass
         new_df = pd.DataFrame(columns=['Contour Area', 'Mean','Blinking','Emotion'], data=pred)
         result = loaded_model.predict(new_df)
         print()
