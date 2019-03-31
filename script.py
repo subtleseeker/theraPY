@@ -28,17 +28,15 @@ counter=0
 emotion_list=[]
 
 song_dict={
-    "0":r"Music/1.mp3",
-    "1":r"Music/2.mp3",
-    "2":r"Music/3.mp3",
-    "3":r"Music/4.mp3",
-    "4":r"Music/5.mp3",
-    "5":r"Music/6.mp3",
-    "6":r"Music/7.mp3",
-    "7":r"Music/8.mp3",
-    "8":r"Music/9.mp3",
-    "9":r"Music/10.mp3",
-    "10":r"Music/10.mp3"
+<<<<<<< HEAD
+    "1":r"Music\1.mp3",
+    "2":r"Music\2.mp3",
+    "3":r"Music\3.mp3"
+=======
+    "1":r"Music/1.mp3",
+    "2":r"Music/2.mp3",
+    "3":r"Music/3.mp3"
+>>>>>>> 2477dc5907d53a55f45db0ac60f64eda0edf3c1e
     }
 
 
@@ -178,7 +176,7 @@ while True:
         ########################### EMOTION ENDS HERE ################################
 
         #cv2.rectangle(frame, (x, y), (x1, y1), color, 2)
-        #cv2.rectangle(rgb_image, (face.left(), face.top()), (face.left() + 20, face.top() + 40),color, 2)
+        cv2.rectangle(rgb_image, (face.left(), face.top()), (face.left() + 20, face.top() + 40),color, 2)
         #draw_text(face, rgb_image, emotion_mode,
                    #color, 0, -45, 1, 1)
 
@@ -278,20 +276,48 @@ while True:
 
             cv2.drawContours(frame, [cnt], 0, (0, 0, 255), 3)
 
-        #cv2.imshow("Threshold left", threshold_eye_left)
-        #cv2.imshow("Threshold right", threshold_eye_right)
-        #cv2.imshow("Left eye", left_eye)
-        #cv2.imshow("Right eye", right_eye)
+        cv2.imshow("Threshold left", threshold_eye_left)
+        cv2.imshow("Threshold right", threshold_eye_right)
+        cv2.imshow("Left eye", left_eye)
+        cv2.imshow("Right eye", right_eye)
 
     cv2.imshow("Frame", frame)
+    counter=counter+1
+
+    filename = 'finalized_model_new.sav'
+    loaded_model = pickle.load(open(filename, 'rb'))
+
+    if (counter%200==0):
+
+
+        if (len(list123)<1 | len(mean)<1 | len(blink_ratio)<1 | len(emotion_list)<1):
+            break
+        pred = [[list123[-1],mean[-1],blink_ratio[-1],emotion_list[-1]]]
+
+        new_df = pd.DataFrame(columns=['Contour Area', 'Mean','Blinking','Emotion'], data=pred)
+        result = loaded_model.predict(new_df)
+        print(result)
+
+        mixer.init()
+        mixer.music.load(song_dict["" + str(int(result))])
+        mixer.music.play()
+
+        print(counter)
+
+        list123=[]
+        mean=[]
+        blink_ratio=[]
+
+
     key = cv2.waitKey(1)
     if key == 27:
+        mixer.music.stop()
 
-        for i in range(0,len(list123)):
+        #for i in range(0,len(list123)):
 
-            with open('dataset.csv','a') as newFile:
-                newFileWriter = csv.writer(newFile)
-                newFileWriter.writerow([list123[i],mean[i],np.random.randint(0,2),emotion_list[i],3])
+            #with open('dataset.csv','a') as newFile:
+                #newFileWriter = csv.writer(newFile)
+                #newFileWriter.writerow([list123[i],mean[i],np.random.randint(0,2),emotion_list[i],3])
 
         break;
 
